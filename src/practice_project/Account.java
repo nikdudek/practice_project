@@ -2,8 +2,30 @@ package practice_project;
 
 public class Account {
 	
+	private final int DEFAULT_TANSACTION_AMOUNT = 0;
+	
 	private int id;
 	private Transaction[] transactions;
+	
+	{
+		this.transactions = new Transaction[DEFAULT_TANSACTION_AMOUNT];
+	}
+	
+	private void addTransaction(Transaction newTransaction) {
+		int length = getTransactions().length;
+		Transaction updatedTransactions[] = new Transaction[length + 1];
+		
+		for(int i = 0 ; i < length ; i++ ) {
+			updatedTransactions[i] = transactions[i];
+		}
+		
+		updatedTransactions[length] = newTransaction;
+		setTransactions(updatedTransactions);
+	}
+	
+	public Account(int id) {
+		this.id = id;
+	}
 	
 	public int getId() {
 		return id;
@@ -22,12 +44,22 @@ public class Account {
 	}
 
 	public void sendMoneyToAccount(Account accountTo, double moneyAmount) {
-	    //<write your code here>
+		if(accountTo == null || moneyAmount == 0)
+			return;
+		else {
+			accountTo.addTransaction(new Transaction(this,accountTo,moneyAmount,StandardAccountOperations.MONEY_TRANSFER_RECEIVE));
+			this.addTransaction(new Transaction(this,accountTo,moneyAmount,StandardAccountOperations.MONEY_TRANSFER_SEND));
+		}
 	}
 	
-	public void withdrawMoney(double moneyAmount) {
-		//<write your code here>
+	public void withdrawMoney(double moneyAmount) throws Exception {
+		if(moneyAmount == 0)
+			return;
+		else {
+			this.addTransaction(new Transaction(this,null,moneyAmount,StandardAccountOperations.WITHDRAW));
+		}
 	}
+	
 	
 	public static class Transaction {
         private Account accountFrom;
